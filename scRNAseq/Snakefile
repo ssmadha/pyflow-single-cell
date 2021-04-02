@@ -11,8 +11,10 @@ include: "rules/common.smk"
 FILES = json.load(open(config['SAMPLES_JSON']))
 ALL_SAMPLES = sorted(FILES.keys())
 
-
 REPORTS = expand("Result/{sample}/{sample}_scRNA_report.html", sample = ALL_SAMPLES)
+
+if len(ALL_SAMPLES)>1:
+    REPORTS += ["Result/%s_scRNA_report.html" % config["mergedname"]]
 
 TARGETS = REPORTS
 
@@ -20,8 +22,10 @@ rule all:
     input: TARGETS
 
 include: "rules/sc_rna_map.smk"
-include: "rules/sc_rna_qc.smk"
 if config["rseqc"]:
     include: "rules/sc_rna_rseqc.smk"
+if len(ALL_SAMPLES) > 1:
+    include: "rules/sc_rna_merge.smk"
+include: "rules/sc_rna_qc.smk"
 include: "rules/sc_rna_analysis.smk"
 include: "rules/sc_rna_report.smk"

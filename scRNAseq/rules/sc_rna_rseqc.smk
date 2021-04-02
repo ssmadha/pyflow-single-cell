@@ -134,7 +134,7 @@ rule scrna_rseqc_plot:
 		"Result/Benchmark/{sample}/{sample}_QCPlot.benchmark"
 	shell:
 		"""
-		Rscript {RSCRIPT_PATH} /scRNAseq_qc.R --prefix {params.outpre} --outdir {params.outdir} \
+		Rscript {RSCRIPT_PATH}/scRNAseq_qc.R --prefix {params.outpre} --outdir {params.outdir} \
 		--bamstat {params.stat} --readdistr {params.distr} --qual {params.qual} --nvc {params.nvc} \
 		--gc {params.gc} --genecov {params.genecov}
 		"""

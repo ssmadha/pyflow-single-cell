@@ -24,7 +24,7 @@ if config["rseqc"]:
             "Result/Benchmark/{sample}/{sample}_Report.benchmark"
         shell:
             """
-			python {SCRIPT_PATH}/scRNA_HTMLReport.py 
+			python {SCRIPT_PATH}/scRNA_HTMLReport.py \
 			--directory {params.outdir} \
 			--outprefix {params.outpre} \
             --fastq-dir {params.fastqdir} \
@@ -58,4 +58,32 @@ else:
             --fastq-dir {params.fastqdir} \
 			--species {params.species} \
 			--platform {params.platform}
+			"""
+
+if len(ALL_SAMPLES) > 1:
+    rule scrna_report_merge:
+        input:
+            clusterplot = "Result/Analysis/%s_cluster.png" % config["mergedname"],
+            sampleplot = "Result/Analysis/%s_samples.png" %config["mergedname"],
+            annotateplot = "Result/Analysis/%s_annotated.png" % config["mergedname"],
+            tflist = "Result/Analysis/%s.PredictedTFTop10.txt" % config["mergedname"],
+            rnafilterplot = "Result/QC/%s_scRNA_cell_filtering.png" % config["mergedname"]
+        output:
+            summaryreport = "Result/%s_scRNA_report.html" % config["mergedname"]
+        params:
+            outdir = "Result",
+            outpre = config["mergedname"],
+            species = config["species"],
+            platform = config["platform"],
+            rseqc = False
+        benchmark:
+            "Result/Benchmark/%s_Report.benchmark" % config["mergedname"]
+        shell:
+            """
+			python {SCRIPT_PATH}/scRNA_HTMLReport.py \
+			--directory {params.outdir} \
+			--outprefix {params.outpre} \
+			--species {params.species} \
+			--platform {params.platform} \
+            --multisample
 			"""
